@@ -120,15 +120,3 @@ def handle_exception(e):
     """Handle general exceptions"""
     logger.error(f"Unhandled exception: {str(e)}")
     return jsonify({'error': 'An unexpected error occurred'}), 500
-
-# if __name__ == '__main__':
-#     # Ensure required packages are installed
-#     try:
-#         import PyPDF2
-#     except ImportError:
-#         print("PyPDF2 is not installed. Please install it using:")
-#         print("pip install PyPDF2")
-#         exit(1)
-    
-#     # Run the Flask app
-#     app.run(debug=True)
