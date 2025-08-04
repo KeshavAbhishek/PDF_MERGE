@@ -12,7 +12,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Set a maximum file size for uploads (e.g., 100MB)
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 100 * 100 * 1024 * 1024
 
 # --- Logging Setup ---
 logging.basicConfig(level=logging.INFO)
