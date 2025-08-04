@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyTheme = (isDarkMode) => {
         // Enable or disable the dark theme stylesheet
         darkThemeStyle.disabled = !isDarkMode;
-        
+
         // Toggle class on body for specific JS/CSS hooks if needed
         document.body.classList.toggle('dark-mode', isDarkMode);
 
@@ -79,7 +79,7 @@ class PDFMerger {
             onEnd: (evt) => {
                 // Skip if empty state was involved
                 if (evt.item.classList.contains('empty-state')) return;
-                
+
                 // Reorder files array
                 const movedFile = this.files.splice(evt.oldIndex, 1)[0];
                 this.files.splice(evt.newIndex, 0, movedFile);
@@ -114,23 +114,23 @@ class PDFMerger {
                 this.showNotification('Only PDF files are allowed', 'error');
                 return false;
             }
-            
+
             // Check file size (50MB limit)
             if (file.size > 50 * 1024 * 1024) {
                 this.showNotification('File size should not exceed 50MB', 'error');
                 return false;
             }
-            
+
             // Check for duplicate files
-            const isDuplicate = this.files.some(existingFile => 
+            const isDuplicate = this.files.some(existingFile =>
                 existingFile.name === file.name && existingFile.size === file.size
             );
-            
+
             if (isDuplicate) {
                 this.showNotification(`File "${file.name}" is already added`, 'error');
                 return false;
             }
-            
+
             return true;
         });
 
@@ -138,7 +138,7 @@ class PDFMerger {
         this.files = [...this.files, ...newFiles];
         this.renderFiles();
         this.updateMergeButton();
-        
+
         if (newFiles.length > 0) {
             this.showNotification(`${newFiles.length} file(s) added successfully`, 'success');
         }
@@ -154,7 +154,7 @@ class PDFMerger {
         }
 
         this.emptyState.style.display = 'none';
-        
+
         // Clear existing file cards except empty state
         const fileCards = this.filesContainer.querySelectorAll('.file-card');
         fileCards.forEach(card => card.remove());
@@ -228,37 +228,37 @@ class PDFMerger {
         this.files.splice(index, 1);
         this.renderFiles();
         this.updateMergeButton();
-        
+
         // Update file input
         const dt = new DataTransfer();
         this.files.forEach(file => dt.items.add(file));
         this.fileInput.files = dt.files;
-        
+
         this.showNotification(`Removed "${removedFile.name}"`, 'success');
     }
 
     viewFile(index) {
         const file = this.files[index];
         const url = URL.createObjectURL(file);
-        
+
         // Open in new tab
         const newWindow = window.open(url, '_blank');
-        
+
         // Check if popup was blocked
         if (!newWindow) {
             this.showNotification('Popup blocked. Please allow popups to preview files.', 'error');
         }
-        
+
         // Clean up URL after some time
         setTimeout(() => URL.revokeObjectURL(url), 5000);
     }
 
     moveFileUp(index) {
         if (index <= 0) return;
-        
+
         // Swap files
         [this.files[index - 1], this.files[index]] = [this.files[index], this.files[index - 1]];
-        
+
         // Re-render files with animation
         this.renderFiles();
         this.showNotification('File moved up', 'success');
@@ -266,10 +266,10 @@ class PDFMerger {
 
     moveFileDown(index) {
         if (index >= this.files.length - 1) return;
-        
+
         // Swap files
         [this.files[index], this.files[index + 1]] = [this.files[index + 1], this.files[index]];
-        
+
         // Re-render files with animation
         this.renderFiles();
         this.showNotification('File moved down', 'success');
@@ -278,7 +278,7 @@ class PDFMerger {
     updateMergeButton() {
         const fileCount = this.files.length;
         this.mergeBtn.disabled = fileCount < 2;
-        
+
         if (fileCount === 0) {
             this.mergeBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>Select PDFs to merge';
         } else if (fileCount === 1) {
@@ -290,14 +290,14 @@ class PDFMerger {
 
     async handleSubmit(e) {
         e.preventDefault();
-        
+
         if (this.files.length < 2) {
             this.showNotification('Please select at least 2 PDF files', 'error');
             return;
         }
 
         this.showLoading();
-        
+
         const formData = new FormData();
         this.files.forEach(file => formData.append('pdf_files', file));
 
@@ -307,32 +307,93 @@ class PDFMerger {
                 body: formData
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                const blob = await response.blob();
-                this.downloadFile(blob, `merged_${Date.now()}.pdf`);
+                // On success, instead of downloading, show the download button
+                this.displayDownloadControls(data.download_url);
                 this.showNotification('PDFs merged successfully!', 'success');
-                
-                // Reset form after successful merge
-                setTimeout(() => {
-                    this.resetForm();
-                }, 2000);
             } else {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to merge PDFs');
+                // If the server returned an error, display it
+                throw new Error(data.error || 'Failed to merge PDFs');
             }
         } catch (error) {
             console.error('Error:', error);
             this.showNotification(`Error: ${error.message}`, 'error');
         } finally {
+            // Hide the loading spinner regardless of outcome
             this.hideLoading();
         }
     }
 
+    displayDownloadControls(downloadUrl) {
+        // Hide the main merge button and drop area without animation
+        this.mergeBtn.style.display = 'none';
+        this.dropArea.style.display = 'none';
+
+        // Clear the list of uploaded file cards
+        this.filesContainer.innerHTML = '';
+
+        // Create the new download UI element
+        const downloadUI = document.createElement('div');
+        downloadUI.className = 'download-section fade-up-animation'; // Apply animation class directly
+
+        // MODIFIED: The onclick now calls a new function 'pdfMerger.resetUI()'
+        downloadUI.innerHTML = `
+            <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+            <h3>Your File is Ready!</h3>
+            <p>Your PDFs have been successfully merged.</p>
+            <div class="download-buttons">
+                <a href="${downloadUrl}" class="action-btn download-btn" download>
+                    <i class="fas fa-download"></i>
+                    <span>Download Merged PDF</span>
+                </a>
+                <button type="button" class="action-btn action-btn-secondary" onclick="pdfMerger.resetUI()">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Merge More Files</span>
+                </button>
+            </div>
+        `;
+
+        // Add the new UI to the page
+        this.filesContainer.appendChild(downloadUI);
+    }
+
+    // NEW FUNCTION: Handles resetting the UI without a page reload
+    resetUI() {
+        // 1. Clear the download section
+        this.filesContainer.innerHTML = '';
+
+        // 2. Show the drop area and merge button again
+        this.dropArea.style.display = 'block'; // Or 'flex' depending on your original CSS
+        this.mergeBtn.style.display = 'inline-flex'; // Or 'flex'
+
+        // 3. Remove any existing animation classes to allow re-triggering
+        this.dropArea.classList.remove('fade-up-animation');
+        this.mergeBtn.classList.remove('fade-up-animation');
+
+        // 4. Force a reflow (important for re-triggering animation)
+        void this.dropArea.offsetWidth;
+
+        // 5. Add the animation class to make them fade in
+        this.dropArea.classList.add('fade-up-animation');
+        this.mergeBtn.classList.add('fade-up-animation');
+
+        
+        // 6. Call the original resetForm to clear file data
+        this.resetForm();
+        this.mergeBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>Merge PDFs';
+        this.mergeBtn.disabled = true;
+    }
+
     resetForm() {
         this.files = [];
-        this.renderFiles();
-        this.updateMergeButton();
+        this.updateMergeButton(); // Update button text and state
         this.fileInput.value = '';
+
+        // Re-add the empty state message inside the filesContainer
+        // this.filesContainer.appendChild(this.emptyState);
+        // this.emptyState.style.display = 'block';
     }
 
     downloadFile(blob, filename) {
@@ -341,11 +402,11 @@ class PDFMerger {
         a.href = url;
         a.download = filename;
         a.style.display = 'none';
-        
+
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        
+
         // Clean up URL
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
@@ -385,12 +446,12 @@ class PDFMerger {
             <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
             <span>${message}</span>
         `;
-        
+
         document.body.appendChild(notification);
-        
+
         // Trigger show animation
         setTimeout(() => notification.classList.add('show'), 100);
-        
+
         // Auto hide after 4 seconds
         setTimeout(() => {
             notification.classList.remove('show');
@@ -402,7 +463,7 @@ class PDFMerger {
         }, 4000);
     }
 
-    
+
 }
 
 // Initialize the PDF Merger

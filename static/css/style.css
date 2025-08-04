@@ -278,8 +278,8 @@ body {
 }
 
 .merge-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
 }
 
 .loading-overlay {
@@ -562,6 +562,144 @@ body {
 
 
 
+/* --- Final Download Section & Button Styles --- */
+
+/* Main container for the download UI */
+.download-section {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+}
+
+.download-section .success-icon {
+    font-size: 48px;
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+.download-section h3 {
+    font-size: 1.5rem;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+.download-section p {
+    color: #6c757d;
+    margin-bottom: 30px;
+}
+
+/* Flex container for the buttons */
+.download-section .download-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Allows buttons to stack on small screens */
+    gap: 1rem;       /* 16px space between buttons */
+}
+
+/* General style for BOTH buttons */
+.download-section .action-btn {
+    /* Flexbox for internal content (icon + text) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem; /* 10px space between icon and text */
+
+    /* Sizing and Spacing */
+    flex-shrink: 0;      /* CRITICAL: Prevents the button from shrinking */
+    white-space: nowrap; /* CRITICAL: Prevents text from wrapping */
+    padding: 24px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    border: 2px solid transparent;
+
+    /* Other */
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    width: max-content;
+}
+
+.download-section .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Primary "Download" button */
+.download-section .download-btn {
+    background-color: #007bff;
+    color: white;
+}
+.download-section .download-btn:hover {
+    background-color: #0069d9;
+}
+
+/* Secondary "Merge More" button */
+.download-section .action-btn-secondary {
+    background-color: #f1f3f5;
+    color: #343a40;
+    border-color: #dee2e6;
+}
+.download-section .action-btn-secondary:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+/* --- Dark Mode Styles --- */
+body.dark-mode .download-section {
+    background-color: #00000000;
+    border-color: #4a6a8a;
+}
+body.dark-mode .download-section h3 {
+    color: #ecf0f1;
+}
+body.dark-mode .download-section p {
+    color: #bdc3c7;
+}
+body.dark-mode .download-section .download-btn {
+    background-color: #3498db;
+    color: #fff;
+}
+body.dark-mode .download-section .download-btn:hover {
+    background-color: #2980b9;
+}
+body.dark-mode .download-section .action-btn-secondary {
+    background-color: #34495e;
+    color: #ecf0f1;
+    border-color: #4a6a8a;
+}
+body.dark-mode .action-btn-secondary:hover {
+    background-color: #4c6277;
+    border-color: #7f9cb9;
+}
+
+/* --- Fade-Up Animation --- */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up-animation {
+  animation: fadeUp 0.5s ease-out forwards;
+}
+
+
+.hideFileSelect{
+    /* display: none !important; */
+    width: 0 !important;
+    height: 0 !important;
+}
 
 
 @media (max-width: 768px) {

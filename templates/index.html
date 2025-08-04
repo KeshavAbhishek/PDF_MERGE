@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="../static/css/dark-theme.css" id="dark-theme-style" disabled>
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/dark-theme.css') }}" id="dark-theme-style" disabled> -->
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -29,7 +31,7 @@
         </div>
 
         <form id="pdf-form" enctype="multipart/form-data">
-            
+
             <div class="upload-section">
                 <div class="file-drop-area" id="drop-area">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
@@ -45,6 +47,25 @@
                     Merge PDFs
                 </button>
             </div>
+
+            <!-- <div class="files-grid" id="files-container">
+                <div class="download-section">
+                    <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                    <h3>Your File is Ready!</h3>
+                    <p>Your PDFs have been successfully merged.</p>
+                    <div class="download-buttons">
+                        <a href="/downloadmerged/merged_document_20250804_102634.pdf" class="action-btn download-btn"
+                            download="">
+                            <i class="fas fa-download"></i>
+                            <span>Download Merged PDF</span>
+                        </a>
+                        <button type="button" class="action-btn action-btn-secondary" onclick="location.reload()">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Merge More Files</span>
+                        </button>
+                    </div>
+                </div>
+            </div> -->
 
             <div class="files-grid" id="files-container">
                 <div class="empty-state" id="empty-state">
@@ -77,4 +98,5 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="../static/js/app.js"></script>
 </body>
+
 </html>
